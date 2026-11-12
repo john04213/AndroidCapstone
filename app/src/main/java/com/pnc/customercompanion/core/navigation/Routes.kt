@@ -1,3 +1,11 @@
 package com.pnc.customercompanion.core.navigation
 
-// TODO: Typed @Serializable routes for every screen.
+import kotlinx.serialization.Serializable
+
+sealed interface CustomerCompanionRoute
+
+@Serializable
+data object DashboardRoute: CustomerCompanionRoute
+
+@Serializable
+data object ProductListRoute: CustomerCompanionRoute

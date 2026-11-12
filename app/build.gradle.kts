@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.bundles.lifecycle)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.material.icons)
+    implementation(libs.androidx.compose.material3.adaptive)
 
     // Navigation + serialization
     implementation(libs.androidx.navigation.compose)
