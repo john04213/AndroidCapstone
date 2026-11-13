@@ -1,3 +1,10 @@
 package com.pnc.customercompanion.features.orders.data
 
-// TODO: Retrofit interface with suspend functions for the customer's orders (features 9, 11).
+import retrofit2.http.GET
+
+// server's order endpoint
+interface OrderApi{
+    // every customer's rows, one row per product line
+    @GET("Order/customer")
+    suspend fun getOrderRows(): List<OrderDto>
+}

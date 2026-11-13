@@ -1,3 +1,6 @@
 package com.pnc.customercompanion.features.orders.domain
 
-// TODO: Interface the ViewModels depend on for order data.
+
+interface OrderRepository {
+    suspend fun getOrders(): List<Order>
+}
