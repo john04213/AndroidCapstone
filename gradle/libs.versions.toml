@@ -45,6 +45,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version = "1.3.0" }
+androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version = "1.3.0" }
 
 # Lifecycle: ViewModels + collecting StateFlow in composables
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -62,6 +63,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 
 # Networking
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
@@ -84,7 +86,7 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 
 [bundles]
 lifecycle = ["androidx-lifecycle-runtime-ktx", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-viewmodel-compose"]
-retrofit = ["retrofit", "retrofit-converter-kotlinx-serialization"]
+retrofit = ["retrofit", "retrofit-converter-kotlinx-serialization", "retrofit-converter"]
 okhttp = ["okhttp", "okhttp-logging-interceptor"]
 room = ["room-runtime", "room-ktx"]
 coil = ["coil-compose", "coil-network-okhttp"]
