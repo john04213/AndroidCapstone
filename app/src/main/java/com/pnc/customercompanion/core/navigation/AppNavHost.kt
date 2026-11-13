@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.pnc.customercompanion.core.CustomerCompanionDashboard
-import com.pnc.customercompanion.features.products.presentation.ProductList
+import com.pnc.customercompanion.features.products.presentation.composables.ProductDirectoryRoute
 
 @Composable
 fun AppNavHost(
@@ -25,7 +25,7 @@ fun AppNavHost(
         }
 
         composable<ProductListRoute> {
-            ProductList(
+            ProductDirectoryRoute(
                 onBack = {
                     navController.popBackStack()
                 }
