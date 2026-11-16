@@ -62,6 +62,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
 
     // Navigation + serialization
     implementation(libs.androidx.navigation.compose)
