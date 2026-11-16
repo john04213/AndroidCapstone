@@ -2,6 +2,8 @@ package com.pnc.customercompanion.core.di
 
 import com.pnc.customercompanion.BuildConfig
 import com.pnc.customercompanion.features.orders.data.OrderApi
+import com.pnc.customercompanion.features.products.data.ProductDataSource
+import com.pnc.customercompanion.features.products.data.RemoteProductDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,6 +64,16 @@ object NetworkModule {
     @Singleton
     fun provideOrderApi(retrofit: Retrofit): OrderApi {
         return retrofit.create(OrderApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductDataSource(
+        retrofit: Retrofit
+    ): ProductDataSource {
+        return retrofit.create(
+            RemoteProductDataSource::class.java
+        )
     }
 
 }

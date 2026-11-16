@@ -1,5 +1,8 @@
 package com.pnc.customercompanion.features.products.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ProductDto (
     val productId: Int,
     val name: String,
