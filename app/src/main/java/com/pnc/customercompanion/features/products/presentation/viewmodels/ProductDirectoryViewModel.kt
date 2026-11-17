@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.customercompanion.features.products.domain.GetProductsUseCase
 import com.pnc.customercompanion.features.products.domain.RefreshProductsUseCase
+import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +70,14 @@ class ProductDirectoryViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun updateSortOrderChange(sort: SortOrder) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                sortOrder = sort
+            )
         }
     }
 

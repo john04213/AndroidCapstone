@@ -42,6 +42,7 @@ fun ProductDirectoryRoute(
                             ProductDirectory(
                                 state = uiState,
                                 useTwoPaneLayout = false,
+                                onSortOrderChange = viewModel::updateSortOrderChange,
                                 onBack = onBack,
                                 onProductSelected = { productId ->
                                     scope.launch {
