@@ -14,7 +14,6 @@ class GetProductsUseCase @Inject constructor(
             .observeProducts()
             .map { products ->
                 products
-                    .sortedBy { it.name }
             }
     }
 }

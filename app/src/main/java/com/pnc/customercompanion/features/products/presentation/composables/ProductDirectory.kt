@@ -1,5 +1,6 @@
 package com.pnc.customercompanion.features.products.presentation.composables
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,19 +8,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.pnc.customercompanion.features.products.domain.MenuOption
+import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,12 +38,20 @@ import com.pnc.customercompanion.features.products.presentation.state.ProductDir
 fun ProductDirectory(
     state: ProductDirectoryState,
     useTwoPaneLayout: Boolean,
+    onSortOrderChange: (SortOrder) -> Unit = {},
     onBack: () -> Unit = {},
     onProductSelected: (Int) -> Unit = {},
     onRefresh: () -> Unit = {},
     onDismissError: () -> Unit = {},
     onSearchQueryChange: (String) -> Unit = {}
 ) {
+    var expanded by remember { mutableStateOf(false) }
+    val options = listOf(
+        MenuOption("Name") { onSortOrderChange(SortOrder.NAME_ASC) },
+        MenuOption("Price: low-high") { onSortOrderChange(SortOrder.PRICE_ASC) },
+        MenuOption("Price: high-low") { onSortOrderChange(SortOrder.PRICE_DESC) }
+    )
+
     Scaffold(
         topBar = {
             Column {
@@ -72,6 +91,35 @@ fun ProductDirectory(
                         .padding(vertical = 4.dp),
                     content = {}
                 )
+                Box {
+                    OutlinedButton(onClick = { expanded = true }) {
+                        Text(
+                            text = when (state.sortOrder) {
+                                SortOrder.NAME_ASC -> options[0].text
+                                SortOrder.PRICE_ASC -> options[1].text
+                                SortOrder.PRICE_DESC -> options[2].text
+                            }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Expand dropdown"
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(text = option.text) },
+                                onClick = {
+                                    option.action()
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     ) { innerPadding ->
