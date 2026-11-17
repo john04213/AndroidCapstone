@@ -1,6 +1,5 @@
 package com.pnc.customercompanion.features.products.presentation.composables
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import com.pnc.customercompanion.R
-import com.pnc.customercompanion.features.orders.domain.sortOrder
 import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
 
@@ -110,9 +108,9 @@ fun ProductDirectory(
                     ) {
                         SortOrder.entries.forEach { option ->
                             DropdownMenuItem(
-                                text = { Text(text = state.sortOrder.label) },
+                                text = { Text(text = option.label) },
                                 onClick = {
-                                    onSortOrderChange(state.sortOrder)
+                                    onSortOrderChange(option)
                                     expanded = false
                                 }
                             )
@@ -131,7 +129,7 @@ fun ProductDirectory(
                                 id = R.plurals.item_count,
                                 count = state.displayedProducts.size,
                                 state.displayedProducts.size
-                            )}${state.searchQuery?.takeIf { it.isNotBlank() }?.let { " for " } ?: ""}${state.searchQuery} · ${state.sortOrder}}",        // Add in-stock filter when able
+                            )}${state.searchQuery?.takeIf { it.isNotBlank() }?.let { " for " } ?: ""}${state.searchQuery} · ${state.sortOrder.label}",        // Add in-stock filter when able
                         modifier = Modifier.weight(5f),
                         softWrap = true
                     )
