@@ -46,13 +46,11 @@ fun ProductDirectory(
     onSearchQueryChange: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Name") }
     val options = listOf(
         MenuOption("Name") { onSortOrderChange(SortOrder.NAME_ASC) },
         MenuOption("Price: low-high") { onSortOrderChange(SortOrder.PRICE_ASC) },
         MenuOption("Price: high-low") { onSortOrderChange(SortOrder.PRICE_DESC) }
     )
-
 
     Scaffold(
         topBar = {
@@ -95,7 +93,13 @@ fun ProductDirectory(
                 )
                 Box {
                     OutlinedButton(onClick = { expanded = true }) {
-                        Text(text = selectedText)
+                        Text(
+                            text = when (state.sortOrder) {
+                                SortOrder.NAME_ASC -> options[0].text
+                                SortOrder.PRICE_ASC -> options[1].text
+                                SortOrder.PRICE_DESC -> options[2].text
+                            }
+                        )
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = "Expand dropdown"
@@ -110,7 +114,6 @@ fun ProductDirectory(
                                 text = { Text(text = option.text) },
                                 onClick = {
                                     option.action()
-                                    selectedText = option.text
                                     expanded = false
                                 }
                             )
