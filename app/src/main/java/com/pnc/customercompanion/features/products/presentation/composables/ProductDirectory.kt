@@ -1,8 +1,12 @@
 package com.pnc.customercompanion.features.products.presentation.composables
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,8 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
+import com.pnc.customercompanion.R
 import com.pnc.customercompanion.features.products.domain.MenuOption
 import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
@@ -119,6 +126,36 @@ fun ProductDirectory(
                             )
                         }
                     }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${pluralStringResource(
+                                id = R.plurals.item_count,
+                                count = state.displayedProducts.size,
+                                state.displayedProducts.size
+                            )} for ${state.searchQuery} · ${when (state.sortOrder) {
+                                SortOrder.NAME_ASC -> options[0].text
+                                SortOrder.PRICE_ASC -> options[1].text
+                                SortOrder.PRICE_DESC -> options[2].text
+                            }}",        // Add in-stock filter when able
+                        modifier = Modifier.weight(5f),
+                        softWrap = true
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Clear all",
+                        modifier = Modifier.clickable {
+                            onSortOrderChange(SortOrder.NAME_ASC)
+                            onSearchQueryChange("")
+                            // Add in-stock filter when able
+                        }
+                    )
                 }
             }
         }

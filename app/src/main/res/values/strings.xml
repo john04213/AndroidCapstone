@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidCapstone</string>
+    <plurals name="item_count">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
 </resources>
