@@ -1,8 +1,11 @@
 package com.pnc.customercompanion.features.products.presentation.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -27,9 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
-import com.pnc.customercompanion.features.products.domain.MenuOption
+import com.pnc.customercompanion.R
 import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
 
@@ -46,11 +52,6 @@ fun ProductDirectory(
     onSearchQueryChange: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val options = listOf(
-        MenuOption("Name") { onSortOrderChange(SortOrder.NAME_ASC) },
-        MenuOption("Price: low-high") { onSortOrderChange(SortOrder.PRICE_ASC) },
-        MenuOption("Price: high-low") { onSortOrderChange(SortOrder.PRICE_DESC) }
-    )
 
     Scaffold(
         topBar = {
@@ -94,11 +95,7 @@ fun ProductDirectory(
                 Box {
                     OutlinedButton(onClick = { expanded = true }) {
                         Text(
-                            text = when (state.sortOrder) {
-                                SortOrder.NAME_ASC -> options[0].text
-                                SortOrder.PRICE_ASC -> options[1].text
-                                SortOrder.PRICE_DESC -> options[2].text
-                            }
+                            text = state.sortOrder.label
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -109,15 +106,42 @@ fun ProductDirectory(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        options.forEach { option ->
+                        SortOrder.entries.forEach { option ->
                             DropdownMenuItem(
-                                text = { Text(text = option.text) },
+                                text = { Text(text = option.label) },
                                 onClick = {
-                                    option.action()
+                                    onSortOrderChange(option)
                                     expanded = false
                                 }
                             )
                         }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${pluralStringResource(
+                                id = R.plurals.item_count,
+                                count = state.displayedProducts.size,
+                                state.displayedProducts.size
+                            )}${state.searchQuery?.takeIf { it.isNotBlank() }?.let { " for " } ?: ""}${state.searchQuery} · ${state.sortOrder.label}",        // Add in-stock filter when able
+                        modifier = Modifier.weight(5f),
+                        softWrap = true
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = {
+                            onSortOrderChange(SortOrder.NAME_ASC)
+                            onSearchQueryChange("")
+                            // Add in-stock filter when able
+                        }
+                    ) {
+                        Text("Clear all")
                     }
                 }
             }
