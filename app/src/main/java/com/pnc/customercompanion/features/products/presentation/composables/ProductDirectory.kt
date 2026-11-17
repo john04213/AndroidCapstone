@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -36,7 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import com.pnc.customercompanion.R
-import com.pnc.customercompanion.features.products.domain.MenuOption
+import com.pnc.customercompanion.features.orders.domain.sortOrder
 import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
 
@@ -53,11 +54,6 @@ fun ProductDirectory(
     onSearchQueryChange: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val options = listOf(
-        MenuOption("Name") { onSortOrderChange(SortOrder.NAME_ASC) },
-        MenuOption("Price: low-high") { onSortOrderChange(SortOrder.PRICE_ASC) },
-        MenuOption("Price: high-low") { onSortOrderChange(SortOrder.PRICE_DESC) }
-    )
 
     Scaffold(
         topBar = {
@@ -101,11 +97,7 @@ fun ProductDirectory(
                 Box {
                     OutlinedButton(onClick = { expanded = true }) {
                         Text(
-                            text = when (state.sortOrder) {
-                                SortOrder.NAME_ASC -> options[0].text
-                                SortOrder.PRICE_ASC -> options[1].text
-                                SortOrder.PRICE_DESC -> options[2].text
-                            }
+                            text = state.sortOrder.label
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -116,11 +108,11 @@ fun ProductDirectory(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        options.forEach { option ->
+                        SortOrder.entries.forEach { option ->
                             DropdownMenuItem(
-                                text = { Text(text = option.text) },
+                                text = { Text(text = state.sortOrder.label) },
                                 onClick = {
-                                    option.action()
+                                    onSortOrderChange(state.sortOrder)
                                     expanded = false
                                 }
                             )
@@ -139,23 +131,20 @@ fun ProductDirectory(
                                 id = R.plurals.item_count,
                                 count = state.displayedProducts.size,
                                 state.displayedProducts.size
-                            )} for ${state.searchQuery} · ${when (state.sortOrder) {
-                                SortOrder.NAME_ASC -> options[0].text
-                                SortOrder.PRICE_ASC -> options[1].text
-                                SortOrder.PRICE_DESC -> options[2].text
-                            }}",        // Add in-stock filter when able
+                            )}${state.searchQuery?.takeIf { it.isNotBlank() }?.let { " for " } ?: ""}${state.searchQuery} · ${state.sortOrder}}",        // Add in-stock filter when able
                         modifier = Modifier.weight(5f),
                         softWrap = true
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "Clear all",
-                        modifier = Modifier.clickable {
+                    TextButton(
+                        onClick = {
                             onSortOrderChange(SortOrder.NAME_ASC)
                             onSearchQueryChange("")
                             // Add in-stock filter when able
                         }
-                    )
+                    ) {
+                        Text("Clear all")
+                    }
                 }
             }
         }
