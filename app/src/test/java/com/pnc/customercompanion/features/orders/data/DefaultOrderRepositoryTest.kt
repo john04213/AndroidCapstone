@@ -1,14 +1,25 @@
 package com.pnc.customercompanion.features.orders.data
 
+import com.pnc.customercompanion.core.error.LoadException
+import com.pnc.customercompanion.core.error.LoadFailure
 import com.pnc.customercompanion.core.session.DemoCustomer
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Test
+import java.io.IOException
 
 class DefaultOrderRepositoryTest {
     private class FakeOrderApi(private val rows: List<OrderDto>): OrderApi {
         override suspend fun getOrderRows(): List<OrderDto> {
             return rows
+        }
+    }
+
+    // an api that always fails with the error it was given
+    private class FailingOrderApi(private val error: Throwable): OrderApi {
+        override suspend fun getOrderRows(): List<OrderDto> {
+            throw error
         }
     }
 
@@ -44,5 +55,17 @@ class DefaultOrderRepositoryTest {
 
         assertEquals(1, orders.size)
         assertEquals(75069, orders[0].orderNumber)
+    }
+
+    @Test
+    fun `no internet leaves as a LoadException with NO_CONNECTION`() = runTest{
+        val repo = DefaultOrderRepository(FailingOrderApi(IOException()), DemoCustomer())
+
+        try{
+            repo.getOrders()
+            fail("Expected a LoadException")
+        } catch (error: LoadException){
+            assertEquals(LoadFailure.NO_CONNECTION, error.failure)
+        }
     }
 }
