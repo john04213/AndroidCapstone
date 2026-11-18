@@ -3,10 +3,14 @@ package com.pnc.customercompanion.features.orders.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.customercompanion.core.error.LoadException
+import com.pnc.customercompanion.core.error.LoadFailure
 import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.features.orders.domain.Order
 import com.pnc.customercompanion.features.orders.domain.OrderRepository
+import com.pnc.customercompanion.features.orders.domain.OrderSort
+import com.pnc.customercompanion.features.orders.domain.sortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,14 +26,65 @@ class OrdersViewModel @Inject constructor(
 
     val uiState: StateFlow<LoadState<List<Order>>> = _uiState.asStateFlow()
 
+    // order list is shown,newest first until the customer picks another
+    private val _sort = MutableStateFlow(OrderSort.NEWEST_FIRST)
+    val sort: StateFlow<OrderSort> = _sort.asStateFlow()
+
+    // true while a pull to refresh is running, so the screen can show progress over the list
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    // why the refresh failed, or nothing when it worked
+    private val _refreshFailure = MutableStateFlow<LoadFailure?>(null)
+    val refreshFailure: StateFlow<LoadFailure?> = _refreshFailure.asStateFlow()
+
+    // the load running right now or nothing before the first one
+    private var loadJob: Job? = null
+
     init{
         loadOrders()
     }
 
     fun loadOrders(){
+         if(isLoadRunning()) return
+
         _uiState.value = LoadState.Loading
-        viewModelScope.launch {
+        loadJob = viewModelScope.launch {
             _uiState.value  = fetchOrdersState()
+        }
+    }
+
+    //pull to refresh: loads again while the current list stays on screen
+    fun refresh(){
+        if(isLoadRunning()) return
+        _isRefreshing.value= true
+        _refreshFailure.value = null
+        loadJob = viewModelScope.launch {
+            showRefreshResult(fetchOrdersState())
+            _isRefreshing.value = false
+        }
+    }
+
+    //shows the loaded orders in a new order without asking the server again
+    fun changeSort(newSort: OrderSort){
+        _sort.value = newSort
+        val currentState = _uiState.value
+        if (currentState is LoadState.Success){
+            _uiState.value = LoadState.Success(sortOrder(currentState.data, newSort))
+        }
+    }
+
+    // true while a first load, a retry or a refresh has not finished yet
+    private fun isLoadRunning():Boolean {
+        return loadJob?.isActive == true
+    }
+
+    // a failed refresh keeps the list that is on screen, any other result replaces it
+    private fun showRefreshResult(state: LoadState<List<Order>>){
+        if(state is LoadState.Failed && _uiState.value is LoadState.Success){
+            _refreshFailure.value = state.failure
+        } else{
+            _uiState.value = state
         }
     }
 
@@ -39,7 +94,7 @@ class OrdersViewModel @Inject constructor(
             return if(orders.isEmpty()) {
                 LoadState.Empty
             } else{
-                LoadState.Success(orders)
+                LoadState.Success(sortOrder(orders, _sort.value))
             }
         } catch (e: LoadException){
             return LoadState.Failed(e.failure)
