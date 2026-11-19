@@ -1,5 +1,6 @@
 package com.pnc.customercompanion.features.products.domain
 
+import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
@@ -8,4 +9,6 @@ interface ProductRepository {
 
     suspend fun refreshProducts()
     suspend fun refreshProduct(id: Int)
+
+    suspend fun saveRecentProduct(productItem: ProductItemHistory)
 }

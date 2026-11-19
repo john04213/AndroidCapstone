@@ -2,12 +2,15 @@ package com.pnc.customercompanion.features.products.domain
 
 import com.pnc.customercompanion.features.products.data.ProductDataSource
 import com.pnc.customercompanion.features.products.data.ProductMapper
+import com.pnc.customercompanion.features.products.data.local.ProductItemDao
+import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class DefaultProductRepository @Inject constructor(
-    private val dataSource: ProductDataSource
+    private val dataSource: ProductDataSource,
+    private val productItemDao: ProductItemDao
 ): ProductRepository {
     override suspend fun observeProducts(): Flow<List<Product>> = flow {
         emit(dataSource.getProducts().map { productDto ->
@@ -21,4 +24,8 @@ class DefaultProductRepository @Inject constructor(
 
     override suspend fun refreshProducts() = Unit
     override suspend fun refreshProduct(id: Int) = Unit
+
+    override suspend fun saveRecentProduct(productItem: ProductItemHistory) {
+        productItemDao.insertOrUpdate(productItem)
+    }
 }
