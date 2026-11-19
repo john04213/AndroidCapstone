@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.pnc.customercompanion.core.error.LoadException
 import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.core.ui.LoadState.Success
+import com.pnc.customercompanion.features.products.data.ProductMapper.mapToDto
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
+import com.pnc.customercompanion.features.products.data.local.ProductItemHistoryMapper.toHistory
 import com.pnc.customercompanion.features.products.domain.GetProductUseCase
 import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.domain.RefreshProductUseCase
@@ -49,27 +51,10 @@ class ProductDetailsViewModel @Inject constructor(
     }
 
     private suspend fun recordProductVisit(productItem: ProductItem) {
+        val prodDto = mapToDto(productItem)
+        val hist = toHistory(prodDto)
         productItemDao.insertOrUpdate(
-            ProductItemHistory(
-                id = productItem.id,
-                name = productItem.name,
-                productNumber = productItem.productNumber,
-                photo = productItem.photo,
-                color = productItem.color,
-                listPrice = productItem.listPrice,
-                stockLevel = productItem.stockLevel,
-                productLine = productItem.productLine,
-                productModelId = productItem.productModelId,
-                productModelName = productItem.productModelName,
-                manufacturer = productItem.manufacturer,
-                material = productItem.material,
-                style = productItem.style,
-                numberOfSteps = productItem.numberOfSteps,
-                setupHours = productItem.setupHours,
-                machineHours = productItem.machineHours,
-                laborHours = productItem.laborHours,
-                lotSize = productItem.lotSize
-            )
+            hist
         )
     }
 }
