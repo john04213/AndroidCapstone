@@ -15,7 +15,7 @@ class DefaultProductRepository @Inject constructor(
         })
     }
 
-    override suspend fun observeProduct(id: Int): Flow<Product?> = flow {
+    override suspend fun observeProduct(id: Int): Flow<ProductItem?> = flow {
         emit(ProductMapper.mapToDomain(dataSource.getProduct(id)))
     }
 

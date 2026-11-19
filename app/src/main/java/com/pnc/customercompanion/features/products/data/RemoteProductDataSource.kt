@@ -10,5 +10,5 @@ interface RemoteProductDataSource: ProductDataSource {
     @GET("Product/{id}")
     override suspend fun getProduct(
         @Path("id") id: Int
-    ): ProductDto
+    ): ProductItemDto
 }
