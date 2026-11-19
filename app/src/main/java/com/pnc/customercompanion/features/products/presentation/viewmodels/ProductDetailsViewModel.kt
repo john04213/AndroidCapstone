@@ -12,6 +12,7 @@ import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
 import com.pnc.customercompanion.features.products.domain.GetProductUseCase
 import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.domain.RefreshProductUseCase
+import com.pnc.customercompanion.features.products.domain.SaveProductItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
     private val getProduct: GetProductUseCase,
-    private val productItemDao: ProductItemDao,
+    private val saveProduct: SaveProductItemUseCase,
     private val refreshProduct: RefreshProductUseCase
 ): ViewModel() {
     private val _uiState: MutableStateFlow<LoadState<ProductItem>> = MutableStateFlow(
@@ -53,8 +54,6 @@ class ProductDetailsViewModel @Inject constructor(
     private suspend fun recordProductVisit(productItem: ProductItem) {
         val prodDto = mapToDto(productItem)
         val hist = toHistory(prodDto)
-        productItemDao.insertOrUpdate(
-            hist
-        )
+        saveProduct(hist)
     }
 }
