@@ -70,7 +70,18 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
         )
     }
 
-    override suspend fun getProduct(id: Int): ProductDto {
-        return getProducts().first { it.productId == id }
+    override suspend fun getProduct(id: Int): ProductDetailDto {
+        val dto = getProducts().first { it.productId == id }
+        return ProductDetailDto(
+            productId = dto.productId,
+            name = dto.name,
+            productNumber = dto.productNumber,
+            thumbnailPhoto = dto.thumbnailPhoto,
+            warranty = dto.warranty,
+            color = dto.color,
+            listPrice = dto.listPrice,
+            summary = "some summary",
+            stockLevel = dto.stockLevel
+        )
     }
 }
