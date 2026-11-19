@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
@@ -18,11 +19,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CustomerCompanionDashboard(
-    onViewProducts: () -> Unit
+    onViewProducts: () -> Unit,
+    onViewOrders: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -41,6 +44,18 @@ fun CustomerCompanionDashboard(
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Chevron Right"
+            )
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth()
+                .testTag("view-orders"),
+            onClick = onViewOrders
+        ) {
+            Text("View my orders  ")
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null
             )
         }
     }

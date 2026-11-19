@@ -9,3 +9,6 @@ data object DashboardRoute: CustomerCompanionRoute
 
 @Serializable
 data object ProductListRoute: CustomerCompanionRoute
+
+@Serializable
+data object OrdersRoute: CustomerCompanionRoute
