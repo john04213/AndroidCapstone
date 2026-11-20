@@ -60,9 +60,14 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
                 .padding(LocalSpacing.current.medium),
             verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.large)
         ){
+
             Text(
                 text = "My Orders",
                 style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                text = "Customer: ${viewModel.customerName}",
+                style = MaterialTheme.typography.titleMedium
             )
             when (val state = uiState) {
                 LoadState.Loading -> LoadingView()
