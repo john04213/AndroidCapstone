@@ -25,7 +25,7 @@ class OrdersViewModelTest {
     private class FakeOrderRepository(
         var orders: List<Order> = emptyList(),
         var failure: LoadFailure? = null
-    ): OrderRepository {
+    ) : OrderRepository {
         // how many times the ViewModel asked for the orders
         var getOrderCalls = 0
 
@@ -42,7 +42,8 @@ class OrdersViewModelTest {
 
     private fun createOrder(
         orderNumber: Int,
-        dateName: String = "2013-06-29T00:00:00"): Order {
+        dateName: String = "2013-06-29T00:00:00"
+    ): Order {
         return Order(
             orderNumber = orderNumber,
             orderDate = LocalDateTime.parse(dateName),
@@ -176,7 +177,7 @@ class OrdersViewModelTest {
         advanceUntilIdle()
 
         assertEquals(LoadState.Success(listOf(orders)), viewModel.uiState.value)
-        assertEquals(LoadFailure.TIMEOUT, viewModel.refreshFailure.value, )
+        assertEquals(LoadFailure.TIMEOUT, viewModel.refreshFailure.value,)
         assertEquals(false, viewModel.isRefreshing.value)
     }
 
@@ -208,5 +209,62 @@ class OrdersViewModelTest {
 
         assertEquals(LoadState.Success(listOf(older, new)), viewModel.uiState.value)
 
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `typing part of an order number shows only the matching orders`() = runTest {
+        val match = createOrder(75069)
+        val other = createOrder(74977)
+        val repository = FakeOrderRepository(listOf(match, other))
+        val viewModel = OrdersViewModel(repository)
+        advanceUntilIdle()
+
+        viewModel.changeSearch("750")
+
+        assertEquals(LoadState.Success(listOf(match)), viewModel.uiState.value)
+        assertEquals("750", viewModel.searchQuery.value)
+        assertEquals(1, repository.getOrderCalls)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `clearing the search shows every order again`() = runTest {
+        val older = createOrder(74977, "2014-05-01T00:00:00")
+        val new = createOrder(75069, "2014-06-29T00:00:00")
+        val repository = FakeOrderRepository(listOf(older, new))
+        val viewModel = OrdersViewModel(repository)
+        advanceUntilIdle()
+
+        viewModel.changeSearch("750")
+        viewModel.changeSearch("")
+
+        assertEquals(LoadState.Success(listOf(new, older)), viewModel.uiState.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `a search with no match shows an empty list and keeps the screen`() = runTest {
+        val viewModel = OrdersViewModel(FakeOrderRepository(listOf(createOrder(75069))))
+        advanceUntilIdle()
+
+        viewModel.changeSearch("1234")
+
+        assertEquals(LoadState.Success(emptyList<Order>()), viewModel.uiState.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `the search stays after a refresh`() = runTest {
+        val match = createOrder(75069)
+        val other = createOrder(74977)
+        val viewModel = OrdersViewModel(FakeOrderRepository(listOf(match, other)))
+        advanceUntilIdle()
+
+        viewModel.changeSearch("750")
+        viewModel.refresh()
+        advanceUntilIdle()
+
+        assertEquals(LoadState.Success(listOf(match)), viewModel.uiState.value)
     }
 }

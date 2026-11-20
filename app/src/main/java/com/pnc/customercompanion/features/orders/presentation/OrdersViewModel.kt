@@ -8,6 +8,7 @@ import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.features.orders.domain.Order
 import com.pnc.customercompanion.features.orders.domain.OrderRepository
 import com.pnc.customercompanion.features.orders.domain.OrderSort
+import com.pnc.customercompanion.features.orders.domain.searchOrders
 import com.pnc.customercompanion.features.orders.domain.sortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -37,6 +38,13 @@ class OrdersViewModel @Inject constructor(
     // why the refresh failed, or nothing when it worked
     private val _refreshFailure = MutableStateFlow<LoadFailure?>(null)
     val refreshFailure: StateFlow<LoadFailure?> = _refreshFailure.asStateFlow()
+
+    // what the customer typed in the search box
+    private val _searchQuery = MutableStateFlow<String>("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    //every order from the last load, before the search and the sort are applied
+    private var loadedOrders: List<Order> = emptyList()
 
     // the load running right now or nothing before the first one
     private var loadJob: Job? = null
@@ -68,15 +76,30 @@ class OrdersViewModel @Inject constructor(
     //shows the loaded orders in a new order without asking the server again
     fun changeSort(newSort: OrderSort){
         _sort.value = newSort
-        val currentState = _uiState.value
-        if (currentState is LoadState.Success){
-            _uiState.value = LoadState.Success(sortOrder(currentState.data, newSort))
-        }
+        showVisibleOrders()
+    }
+
+    // shows only the loaded orders whose number contains the typed text without asking the server again
+    fun changeSearch(typed: String){
+        _searchQuery.value = typed
+        showVisibleOrders()
     }
 
     // true while a first load, a retry or a refresh has not finished yet
     private fun isLoadRunning():Boolean {
         return loadJob?.isActive == true
+    }
+
+    // puts the searched and sorted on screen and does nothing while no list is showing
+    private fun showVisibleOrders(){
+        if(_uiState.value is LoadState.Success){
+            _uiState.value = LoadState.Success(visibleOrders())
+        }
+    }
+
+    // the loaded orders that match the search in the chosen order
+    private fun visibleOrders(): List<Order>{
+        return sortOrder(searchOrders(loadedOrders, _searchQuery.value), _sort.value)
     }
 
     // a failed refresh keeps the list that is on screen, any other result replaces it
@@ -94,7 +117,8 @@ class OrdersViewModel @Inject constructor(
             return if(orders.isEmpty()) {
                 LoadState.Empty
             } else{
-                LoadState.Success(sortOrder(orders, _sort.value))
+                loadedOrders = orders
+                LoadState.Success(visibleOrders())
             }
         } catch (e: LoadException){
             return LoadState.Failed(e.failure)

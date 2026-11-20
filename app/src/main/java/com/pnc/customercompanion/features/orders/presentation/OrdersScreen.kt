@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -17,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnc.customercompanion.core.error.LoadFailure
@@ -43,6 +50,7 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
     val sort by viewModel.sort.collectAsStateWithLifecycle()
     val refreshFailure by viewModel.refreshFailure.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val searchText by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     Scaffold { innerPadding ->
         Column(
@@ -60,6 +68,8 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
                 LoadState.Empty -> EmptyView(message = "You have no orders yet")
                 is LoadState.Success -> OrdersList(
                     orders = state.data,
+                    searchQuery = searchText,
+                    onSearchChange = viewModel::changeSearch,
                     sort = sort,
                     onSortChange = viewModel::changeSort,
                     refreshFailure = refreshFailure,
@@ -76,6 +86,8 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
 @Composable
 private fun OrdersList(
     orders: List<Order>,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
     sort: OrderSort,
     onSortChange: (OrderSort) -> Unit,
     refreshFailure: LoadFailure?,
@@ -85,12 +97,31 @@ private fun OrdersList(
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium)
     ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchChange,
+            label = { Text(text = "Search order number") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            trailingIcon = {
+                if(searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onSearchChange("") }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear search")
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         SortChips(
             selected = sort,
             onSortChange = onSortChange
         )
         if (refreshFailure != null) {
             RefreshFailureNote(failure = refreshFailure)
+        }
+        if (orders.isEmpty()) {
+            Text(text = "No orders match \"$searchQuery\"")
         }
             PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
                 key(sort) {
