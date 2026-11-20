@@ -11,4 +11,8 @@ interface ProductRepository {
     suspend fun refreshProduct(id: Int)
 
     suspend fun saveRecentProduct(productItem: ProductItemHistory)
+
+    fun getProductHistory(): Flow<List<ProductItem>>
+
+    suspend fun clearDatabase()
 }
