@@ -1,3 +1,13 @@
 package com.pnc.customercompanion.features.orders.domain
 
-// TODO: Turns API status values into customer wording, with an Unknown Status fallback (feature 12).
+fun orderStatusLabel(statusCode: Int): String {
+    return when (statusCode) {
+        1 -> "Processing"
+        2 -> "Approved"
+        3 -> "Backordered"
+        4 -> "Rejected"
+        5 -> "Shipped"
+        6 -> "Cancelled"
+        else -> "Unknown Status"
+    }
+}

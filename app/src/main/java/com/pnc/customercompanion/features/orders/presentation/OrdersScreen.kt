@@ -38,6 +38,7 @@ import com.pnc.customercompanion.core.ui.LoadingView
 import com.pnc.customercompanion.core.ui.loadFailureMessage
 import com.pnc.customercompanion.features.orders.domain.Order
 import com.pnc.customercompanion.features.orders.domain.OrderSort
+import com.pnc.customercompanion.features.orders.domain.orderStatusLabel
 import com.pnc.customercompanion.ui.theme.LocalSpacing
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -177,7 +178,7 @@ internal fun sortLabel(sort: OrderSort): String {
     }
 }
 
-// one order: it's number, date, and total
+// one order: its number, date, and total
 @Composable
 internal fun OrderRow(order: Order){
     Card(
@@ -194,6 +195,10 @@ internal fun OrderRow(order: Order){
             )
             Text(
                 text = "Date: ${formatOrderDate(order.orderDate)}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Status: ${orderStatusLabel(order.statusCode)}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
