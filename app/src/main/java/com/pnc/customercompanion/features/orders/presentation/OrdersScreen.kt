@@ -71,7 +71,7 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
                 modifier = Modifier.semantics { heading() }
             )
             Text(
-                text = "Customer: ${viewModel.customerName}",
+                text = "${viewModel.customerName} is a demo customer",
                 style = MaterialTheme.typography.titleMedium
             )
             when (val state = uiState) {
