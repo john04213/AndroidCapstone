@@ -38,6 +38,9 @@ class OrdersViewModelTest {
                 return orders
             }
         }
+        override suspend fun getOrder(orderNumber: Int): Order? {
+            return orders.firstOrNull { order -> order.orderNumber == orderNumber }
+        }
     }
 
     private fun createOrder(
@@ -266,5 +269,11 @@ class OrdersViewModelTest {
         advanceUntilIdle()
 
         assertEquals(LoadState.Success(listOf(match)), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `the screen gets the demo customer's name`() {
+        val viewModel = OrdersViewModel(FakeOrderRepository())
+        assertEquals("Jared Peterson", viewModel.customerName)
     }
 }

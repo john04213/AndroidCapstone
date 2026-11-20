@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.customercompanion.core.error.LoadException
 import com.pnc.customercompanion.core.error.LoadFailure
+import com.pnc.customercompanion.core.session.DemoCustomer
 import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.features.orders.domain.Order
 import com.pnc.customercompanion.features.orders.domain.OrderRepository
@@ -21,8 +22,12 @@ import javax.inject.Inject
 // holds what the orders screen should show
 @HiltViewModel
 class OrdersViewModel @Inject constructor(
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    demoCustomer: DemoCustomer = DemoCustomer()
 ): ViewModel()  {
+
+    // the demo customer's name shown under the title
+    val customerName: String = demoCustomer.name
     private val _uiState = MutableStateFlow<LoadState<List<Order>>>(LoadState.Loading)
 
     val uiState: StateFlow<LoadState<List<Order>>> = _uiState.asStateFlow()
