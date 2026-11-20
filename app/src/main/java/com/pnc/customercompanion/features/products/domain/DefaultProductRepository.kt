@@ -4,8 +4,10 @@ import com.pnc.customercompanion.features.products.data.ProductDataSource
 import com.pnc.customercompanion.features.products.data.ProductMapper
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
+import com.pnc.customercompanion.features.products.data.local.ProductItemHistoryMapper.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DefaultProductRepository @Inject constructor(
@@ -27,5 +29,15 @@ class DefaultProductRepository @Inject constructor(
 
     override suspend fun saveRecentProduct(productItem: ProductItemHistory) {
         productItemDao.insertOrUpdate(productItem)
+    }
+
+    override fun getProductHistory(): Flow<List<ProductItem>> {
+        return productItemDao.getRecentProductHistory().map { productItems ->
+            productItems.map { it }
+        }
+    }
+
+    override suspend fun clearDatabase() {
+        productItemDao.clearHistory()
     }
 }

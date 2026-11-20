@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.pnc.customercompanion.features.products.domain.ProductItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -12,5 +13,8 @@ interface ProductItemDao {
     suspend fun insertOrUpdate(productItem: ProductItemHistory)
 
     @Query("SELECT * FROM product_browsing_history ORDER BY timestamp DESC LIMIT 10")
-    fun getRecentProductHistory(): Flow<List<ProductItemHistory>>
+    fun getRecentProductHistory(): Flow<List<ProductItem>>
+
+    @Query("DELETE FROM product_browsing_history")
+    suspend fun clearHistory()
 }
