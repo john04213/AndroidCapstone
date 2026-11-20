@@ -23,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,7 +65,8 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
         ){
             Text(
                 text = "My Orders",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.semantics { heading() }
             )
             when (val state = uiState) {
                 LoadState.Loading -> LoadingView()
@@ -121,7 +126,9 @@ private fun OrdersList(
             RefreshFailureNote(failure = refreshFailure)
         }
         if (orders.isEmpty()) {
-            Text(text = "No orders match \"$searchQuery\"")
+            Text(text = "No orders match \"$searchQuery\"",
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+            )
         }
             PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
                 key(sort) {
@@ -157,7 +164,8 @@ private fun RefreshFailureNote(failure: LoadFailure){
     Text(
         text = "Couldn't refresh. ${loadFailureMessage(failure)}",
         color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
     )
 }
 
@@ -171,10 +179,11 @@ internal fun sortLabel(sort: OrderSort): String {
 
 // one order: it's number, date, and total
 @Composable
-private fun OrderRow(order: Order){
+internal fun OrderRow(order: Order){
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics ( mergeDescendants = true ) {}
     )
         { Column(
             modifier = Modifier.padding(LocalSpacing.current.medium)
