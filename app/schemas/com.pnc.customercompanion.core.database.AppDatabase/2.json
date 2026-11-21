@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "83c9ea6d81f56d39ba9829c7bf5315bf",
+    "identityHash": "538c4afaa592b93a117be5b24f69f30a",
     "entities": [
       {
         "tableName": "product_browsing_history",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `productNumber` TEXT NOT NULL, `photo` TEXT NOT NULL, `color` TEXT, `listPrice` REAL NOT NULL, `stockLevel` INTEGER NOT NULL, `productLine` TEXT NOT NULL, `productModelId` INTEGER NOT NULL, `productModelName` TEXT NOT NULL, `manufacturer` TEXT, `material` TEXT, `style` TEXT, `numberOfSteps` INTEGER NOT NULL, `setupHours` INTEGER NOT NULL, `machineHours` INTEGER NOT NULL, `laborHours` INTEGER NOT NULL, `lotSize` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `productNumber` TEXT NOT NULL, `photo` TEXT NOT NULL, `color` TEXT, `listPrice` REAL NOT NULL, `stockLevel` INTEGER NOT NULL, `productLine` TEXT, `productModelId` INTEGER NOT NULL, `productModelName` TEXT NOT NULL, `manufacturer` TEXT, `material` TEXT, `style` TEXT, `numberOfSteps` INTEGER NOT NULL, `setupHours` INTEGER NOT NULL, `machineHours` INTEGER NOT NULL, `laborHours` INTEGER NOT NULL, `lotSize` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -52,8 +52,7 @@
           {
             "fieldPath": "productLine",
             "columnName": "productLine",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "productModelId",
@@ -129,7 +128,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '83c9ea6d81f56d39ba9829c7bf5315bf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '538c4afaa592b93a117be5b24f69f30a')"
     ]
   }
 }
