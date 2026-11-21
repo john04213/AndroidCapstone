@@ -53,7 +53,7 @@ fun ProductDetailsContent(
             try {
                 android.util.Base64.decode(raw, android.util.Base64.DEFAULT)
             } catch (e: Exception) {
-                null
+                throw e
             }
         }
     }
