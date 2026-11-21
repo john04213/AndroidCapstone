@@ -23,6 +23,7 @@ fun loadFailureMessage(failure: LoadFailure): String {
         LoadFailure.HTTP_ERROR -> "The server had a problem. Please try again later"
         LoadFailure.BAD_DATA -> "We received information we couldn't read. Please try again later"
         LoadFailure.UNKNOWN -> "Something went wrong. Please try again later"
+        LoadFailure.NOT_FOUND -> "We couldn't find what you were looking for. Please try again."
     }
 }
 

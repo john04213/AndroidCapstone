@@ -6,6 +6,8 @@ enum class LoadFailure {
     TIMEOUT,
     HTTP_ERROR,
     BAD_DATA,
+
+    NOT_FOUND,
     UNKNOWN
 }
 

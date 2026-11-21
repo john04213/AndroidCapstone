@@ -8,7 +8,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pnc.customercompanion.core.ui.FailedView
 import com.pnc.customercompanion.core.ui.LoadState
+import com.pnc.customercompanion.core.ui.LoadingView
 import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.presentation.viewmodels.ProductDetailsViewModel
 
@@ -25,9 +27,9 @@ fun ProductDetails(
         viewModel.loadProduct(productId)
     }
 
-    when (state) {
+    when (val current = state) {
         is LoadState.Loading -> {
-            CircularProgressIndicator()
+            LoadingView()
         }
 
         is LoadState.Empty -> {
@@ -43,12 +45,9 @@ fun ProductDetails(
             )
         }
 
-        is LoadState.Failed -> {
-            val message = (state as LoadState.Failed).failure
-            Text(
-                message.toString(),
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+        is LoadState.Failed -> FailedView(
+            failure = current.failure,
+            onRetry = viewModel::retry
+        )
     }
 }

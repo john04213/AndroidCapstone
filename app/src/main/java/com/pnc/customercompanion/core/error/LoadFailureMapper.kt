@@ -12,9 +12,9 @@ fun toLoadFailure(error: Throwable): LoadFailure {
     return when(error){
         is SocketTimeoutException -> LoadFailure.TIMEOUT
         is IOException -> LoadFailure.NO_CONNECTION
-        is HttpException -> LoadFailure.HTTP_ERROR
         is SerializationException -> LoadFailure.BAD_DATA
         is DateTimeParseException -> LoadFailure.BAD_DATA
+        is HttpException -> if (error.code() == 404) LoadFailure.NOT_FOUND else LoadFailure.HTTP_ERROR
         else -> LoadFailure.UNKNOWN
     }
 }

@@ -2,7 +2,6 @@ package com.pnc.customercompanion.features.products.data
 
 import com.pnc.customercompanion.features.products.domain.Product
 import com.pnc.customercompanion.features.products.domain.ProductItem
-import kotlin.String
 
 object ProductMapper {
     fun mapToDomain(dto: ProductDto): Product {
@@ -18,7 +17,8 @@ object ProductMapper {
         )
     }
 
-    fun mapToDomain(dto: ProductItemDto): ProductItem {
+    fun mapToDomain(dto: ProductItemDto?): ProductItem? {
+        if (dto == null) return null
         return ProductItem(
             id = dto.productId,
             name = dto.productName,
