@@ -84,7 +84,8 @@ fun ProductDetailsContent(
                 IconButton(onClick = onBookmarkClick) {
                     Icon(
                         imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        contentDescription = "Bookmark product"
+                        contentDescription = if (isBookmarked) "Remove from saved" else "Save product",
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
@@ -175,23 +176,6 @@ fun ProductDetailsContent(
 
         Spacer(Modifier.height(16.dp))
 
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(
-                Icons.Outlined.BookmarkBorder,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text("Save product")
-        }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 

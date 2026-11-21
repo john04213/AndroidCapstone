@@ -20,6 +20,8 @@ fun ProductDetails(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
+
     LaunchedEffect(productId) {
         viewModel.loadProduct(productId)
     }
@@ -37,9 +39,11 @@ fun ProductDetails(
 
         is LoadState.Success -> {
             val product = (state as LoadState.Success<ProductItem>).data
-            ProductDetailsContent(product = product,
+            ProductDetailsContent(
+                product = product,
                 onBack = onBack,
-                onBookmarkClick = {}
+                isBookmarked = isSaved,
+                onBookmarkClick = viewModel::toggleSaved
             )
         }
 

@@ -19,5 +19,5 @@ interface SavedProductItemDao {
     fun getSavedProducts(): Flow<List<SavedProductItem>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM saved_products WHERE id = :id)")
-    fun isSaved(id: Int): Flow<Boolean>
+    suspend fun isSaved(id: Int): Boolean
 }
