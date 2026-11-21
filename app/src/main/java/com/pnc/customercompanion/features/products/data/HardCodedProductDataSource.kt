@@ -70,7 +70,7 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
         )
     }
 
-    override suspend fun getProduct(id: Int): ProductItemDto {
+    override suspend fun getProduct(id: Int): ProductItemDto? {
         val products = listOf(
             ProductItemDto(
                 productId = 680,
@@ -193,6 +193,6 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
                 lotSize = 0,
             )
         )
-        return products.first { it.productId == id }
+        return products.firstOrNull { it.productId == id }
     }
 }

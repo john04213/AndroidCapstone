@@ -1,6 +1,6 @@
 package com.pnc.customercompanion.core.di
 
-import com.pnc.customercompanion.features.products.domain.DefaultProductRepository
+import com.pnc.customercompanion.features.products.data.DefaultProductRepository
 import com.pnc.customercompanion.features.products.domain.ProductRepository
 import dagger.Binds
 import dagger.Module

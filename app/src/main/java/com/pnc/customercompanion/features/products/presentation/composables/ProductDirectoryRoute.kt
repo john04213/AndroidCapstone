@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductDirectoryRoute(
     onBack: () -> Unit = {},
+    useTwoPaneLayout: Boolean = false,
     viewModel: ProductDirectoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,7 +65,13 @@ fun ProductDirectoryRoute(
                         CompositionLocalProvider(LocalPaneAnimationScope provides this) {
                             val productId = navigator.currentDestination?.contentKey
                             if (productId != null) {
-                                ProductDetails(productId = productId)
+
+                                ProductDetails(
+                                    productId = productId,
+                                    onBack = if (useTwoPaneLayout) null else {
+                                        { scope.launch { if (navigator.canNavigateBack()) navigator.navigateBack() } }
+                                    }
+                                )
                             }
                         }
                     }
@@ -73,3 +80,4 @@ fun ProductDirectoryRoute(
         }
     }
 }
+
