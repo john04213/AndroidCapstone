@@ -10,16 +10,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,18 +31,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.pnc.customercompanion.features.products.domain.ProductDetail
 import com.pnc.customercompanion.ui.theme.AndroidCapstoneTheme
+import com.pnc.customercompanion.features.products.domain.ProductItem
 import java.text.NumberFormat
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailsContent(
-    product: ProductDetail,
+    product: ProductItem,
+    onBack: () -> Unit = {},
+    showBackArrow: Boolean = true,
+    isBookmarked: Boolean = false,
+    onBookmarkClick: () -> Unit = {}
 ) {
 
-    val imageModel: Any? = remember(product.thumbnailPhoto) {
-        val raw = product.thumbnailPhoto
+    val imageModel: Any? = remember(product.photo) {
+        val raw = product.photo
         if (raw.isBlank()) null
         else if (raw.startsWith("http")) raw
         else {
@@ -58,6 +66,28 @@ fun ProductDetailsContent(
             .padding(horizontal = 16.dp)
     ) {
 
+        TopAppBar(
+            title = { },
+            navigationIcon = {
+                if (showBackArrow) {
+                IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate back"
+                        )
+                    }
+                }
+            },
+            actions = {
+                IconButton(onClick = onBookmarkClick) {
+                    Icon(
+                        imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                        contentDescription = "Bookmark product"
+                    )
+                }
+            }
+        )
+
         AsyncImage(
             model = imageModel,
             contentDescription = product.name,
@@ -71,19 +101,11 @@ fun ProductDetailsContent(
         Text(product.name, style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
         Text(
-            usdFormat.format(product.price),
+            usdFormat.format(product.listPrice),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium
         )
         Spacer(Modifier.height(12.dp))
-
-        Spacer(Modifier.height(12.dp))
-
-        Text(
-            product.summary,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
 
         Column {
             Row(
@@ -149,18 +171,17 @@ fun ProductDetailsContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Warranty",
+                    "Product line",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    product.warranty ?: "no warranty available",
+                    product.productLine ?: "no style available",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
 
         }
 
@@ -186,23 +207,31 @@ fun ProductDetailsContent(
     }
 }
 
-    @Preview(showBackground = true)
-    @Composable
-    fun ProductDetailsPreview() {
-        val sampleProduct = ProductDetail(
-            id = 680,
-            name = "Mountain Bike Zero, 901",
-            productNumber = "56465138543",
-            color = "Blue",
-            warranty = "3 years limited",
-            price = 1939.98,
-            thumbnailPhoto = "",
-            summary = "Our lightest and best quality aluminum frame made from the newest alloy; welded and heat-treated for strength.",
-            stockLevel = 123
-        )
+@Preview(showBackground = true)
+@Composable
+fun ProductDetailsPreview() {
+    val sampleProduct = ProductItem(
+        id = 680,
+        name = "Mountain Bike Zero, 901",
+        productNumber = "56465138543",
+        photo = "",
+        color = "Blue",
+        listPrice = 1939.98,
+        stockLevel = 123,
+        productLine = "R ",
+        productModelId = 6,
+        productModelName = "HL Road Frame",
+        manufacturer = null,
+        material = null,
+        style = "3 years limited",
+        numberOfSteps = 0,
+        setupHours = 0,
+        machineHours = 0,
+        laborHours = 0,
+        lotSize = 0
+    )
 
-        AndroidCapstoneTheme {
-                ProductDetailsContent(product = sampleProduct)
-        }
+    AndroidCapstoneTheme {
+        ProductDetailsContent(product = sampleProduct)
     }
-
+}
