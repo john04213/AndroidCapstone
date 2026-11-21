@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.pnc.customercompanion.ui.theme.AndroidCapstoneTheme
 import com.pnc.customercompanion.features.products.domain.ProductItem
+import com.pnc.customercompanion.features.products.domain.availability
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -106,25 +107,9 @@ fun ProductDetailsContent(
         )
         Spacer(Modifier.height(12.dp))
 
+        AvailabilityBadge(product.availability())
+
         Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    "Stock level",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    "${product.stockLevel}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
