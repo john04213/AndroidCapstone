@@ -1,3 +1,23 @@
 package com.pnc.customercompanion.core.database
 
-// TODO: Room database listing the saved-product and recent-product entities (features 7, 8).
+import android.content.Context
+import androidx.room.AutoMigration
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.pnc.customercompanion.features.products.data.local.ProductItemDao
+import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
+
+@Database(
+    entities = [
+        ProductItemHistory::class
+    ],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
+)
+abstract class AppDatabase: RoomDatabase() {
+    abstract fun productItemDao(): ProductItemDao
+}

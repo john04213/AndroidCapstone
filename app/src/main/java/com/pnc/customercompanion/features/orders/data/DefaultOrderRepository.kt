@@ -22,4 +22,9 @@ class DefaultOrderRepository @Inject constructor(
             throw LoadException(toLoadFailure(error), error)
         }
     }
+
+    // finds one order in the demo customer's list and a failed load still comes through getOrders as LoadException
+    override suspend fun getOrder(orderNumber: Int): Order? {
+       return getOrders().find { order -> order.orderNumber == orderNumber }
+    }
 }

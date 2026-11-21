@@ -5,10 +5,8 @@ import javax.inject.Inject
 
 class GetProductUseCase @Inject constructor(
     private val productRepository: ProductRepository
-) {
-
-    operator fun invoke(id: Int): Flow<ProductDetail?> {
+){
+    suspend operator fun invoke(id: Int): Flow<ProductItem?> {
         return productRepository.observeProduct(id)
     }
-
 }

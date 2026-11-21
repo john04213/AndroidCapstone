@@ -68,4 +68,32 @@ class DefaultOrderRepositoryTest {
             assertEquals(LoadFailure.NO_CONNECTION, error.failure)
         }
     }
+
+    @Test
+    fun `one order is found by its number with all its lines`() = runTest {
+        val rows = listOf(
+            createRow(11502,75069,4.99),
+            createRow(11502,75069,34.99),
+            createRow(11502,74977,97.96)
+        )
+        val repository = DefaultOrderRepository(FakeOrderApi(rows), DemoCustomer())
+
+        val order = repository.getOrder(75069)
+
+        assertEquals(75069, order?.orderNumber)
+        assertEquals(2, order?.orderLines?.size)
+    }
+
+    @Test
+    fun `another customer's order number gives nothing`() = runTest {
+        val rows = listOf(
+            createRow(11794,75087,34.99),
+            createRow(11502,75069, 4.99)
+        )
+        val repository = DefaultOrderRepository(FakeOrderApi(rows), DemoCustomer())
+
+        val order = repository.getOrder(75087)
+
+        assertEquals(null, order)
+    }
 }
