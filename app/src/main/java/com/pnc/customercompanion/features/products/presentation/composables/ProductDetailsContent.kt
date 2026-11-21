@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,6 +93,8 @@ fun ProductDetailsContent(
         AsyncImage(
             model = imageModel,
             contentDescription = product.name,
+            error = rememberVectorPainter(Icons.Outlined.Image),
+            fallback = rememberVectorPainter(Icons.Outlined.Image),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(4.dp))
@@ -122,7 +126,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    product.color ?: "no color available",
+                    product.color ?: "Not specified",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -160,7 +164,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    product.productLine ?: "no style available",
+                    product.productLine ?: "Not specified",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
