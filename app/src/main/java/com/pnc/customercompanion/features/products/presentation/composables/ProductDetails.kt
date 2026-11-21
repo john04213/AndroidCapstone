@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pnc.customercompanion.core.error.LoadFailure
 import com.pnc.customercompanion.core.ui.FailedView
 import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.core.ui.LoadingView
@@ -17,8 +18,7 @@ import com.pnc.customercompanion.features.products.presentation.viewmodels.Produ
 @Composable
 fun ProductDetails(
     productId: Int,
-    showBackArrow: Boolean = true,
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = null,
     viewModel: ProductDetailsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -32,22 +32,24 @@ fun ProductDetails(
             LoadingView()
         }
 
-        is LoadState.Empty -> {
-            Text("Product not found")
-        }
+        is LoadState.Empty -> FailedView(
+            failure = LoadFailure.NOT_FOUND,
+            onRetry = viewModel::retry,
+            onBack = onBack
+        )
 
         is LoadState.Success -> {
             val product = (state as LoadState.Success<ProductItem>).data
             ProductDetailsContent(product = product,
                 onBack = onBack,
-                showBackArrow = showBackArrow,
                 onBookmarkClick = {}
             )
         }
 
         is LoadState.Failed -> FailedView(
             failure = current.failure,
-            onRetry = viewModel::retry
+            onRetry = viewModel::retry,
+            onBack = onBack
         )
     }
 }

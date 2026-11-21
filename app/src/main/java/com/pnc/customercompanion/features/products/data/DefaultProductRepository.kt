@@ -28,6 +28,8 @@ class DefaultProductRepository @Inject constructor(
             dataSource.getProduct(id)
         } catch (error: CancellationException) {
             throw error
+        } catch (error: LoadException) {
+            throw error
         } catch (error: Exception) {
             throw (LoadException(toLoadFailure(error), error))
         }

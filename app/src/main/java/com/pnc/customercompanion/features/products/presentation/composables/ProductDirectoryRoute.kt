@@ -67,17 +67,10 @@ fun ProductDirectoryRoute(
                             val productId = navigator.currentDestination?.contentKey
                             if (productId != null) {
 
-                                val showBackArrow = !useTwoPaneLayout
-
                                 ProductDetails(
                                     productId = productId,
-                                    showBackArrow = showBackArrow,
-                                    onBack = {
-                                        scope.launch {
-                                            if (navigator.canNavigateBack()) {
-                                                navigator.navigateBack()
-                                            }
-                                        }
+                                    onBack = if (useTwoPaneLayout) null else {
+                                        { scope.launch { if (navigator.canNavigateBack()) navigator.navigateBack() } }
                                     }
                                 )
                             }

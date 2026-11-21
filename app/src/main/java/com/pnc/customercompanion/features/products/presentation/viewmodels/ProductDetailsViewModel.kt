@@ -3,6 +3,7 @@ package com.pnc.customercompanion.features.products.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.customercompanion.core.error.LoadException
+import com.pnc.customercompanion.core.error.LoadFailure
 import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.features.products.data.ProductMapper.mapToDto
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistoryMapper.toHistory
@@ -42,7 +43,7 @@ class ProductDetailsViewModel @Inject constructor(
             try {
                 val product = getProduct(id).first()
                 if (product == null) {
-                    _uiState.value = LoadState.Empty
+                    _uiState.value = LoadState.Failed(LoadFailure.NOT_FOUND)
                 } else {
                     _uiState.value = LoadState.Success(product)
                     recordProductVisit(product)

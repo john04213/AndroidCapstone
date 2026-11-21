@@ -54,16 +54,21 @@ fun EmptyView(message: String){
 
 // shown when the load failed says what went wrong
 @Composable
-fun FailedView(failure: LoadFailure, onRetry: () -> Unit) {
+fun FailedView(failure: LoadFailure, onRetry: () -> Unit, onBack: (() -> Unit)? = null) {
     Column(
         modifier = Modifier.fillMaxSize().padding(LocalSpacing.current.extraLarge),
         verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(text = loadFailureMessage(failure), textAlign = TextAlign.Center)
-        Button(
-            onClick = onRetry
-        ) { Text(text = "Retry")}
+        if (failure == LoadFailure.NOT_FOUND) {
+            // retrying won't help, so offer a way out instead
+            if (onBack != null) {
+                Button(onClick = onBack) { Text(text = "Go back") }
+            }
+        } else {
+            Button(onClick = onRetry) { Text(text = "Retry") }
+        }
     }
 }
 

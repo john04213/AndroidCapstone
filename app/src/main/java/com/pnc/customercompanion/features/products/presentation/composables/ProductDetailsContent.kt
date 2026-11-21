@@ -40,8 +40,7 @@ import java.util.Locale
 @Composable
 fun ProductDetailsContent(
     product: ProductItem,
-    onBack: () -> Unit = {},
-    showBackArrow: Boolean = true,
+    onBack: (() -> Unit)? = null,
     isBookmarked: Boolean = false,
     onBookmarkClick: () -> Unit = {}
 ) {
@@ -69,7 +68,7 @@ fun ProductDetailsContent(
         TopAppBar(
             title = { },
             navigationIcon = {
-                if (showBackArrow) {
+                if (onBack != null) {
                 IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
