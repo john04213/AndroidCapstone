@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pnc.customercompanion.features.products.domain.Product
-import com.pnc.customercompanion.features.products.presentation.composables.ProductCard
 
 @Composable
 fun SavedProductList(
