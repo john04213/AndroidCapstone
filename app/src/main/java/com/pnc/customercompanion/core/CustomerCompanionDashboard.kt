@@ -33,8 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnc.customercompanion.core.ui.base64ToBitmap
-import com.pnc.customercompanion.features.products.domain.availability
-import com.pnc.customercompanion.features.products.presentation.composables.AvailabilityBadge
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -43,6 +41,7 @@ fun CustomerCompanionDashboard(
     onViewProducts: () -> Unit,
     onViewProductItem: (Int) -> Unit,
     onViewOrders: () -> Unit,
+    onViewSaved: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val items by viewModel.productItems.collectAsStateWithLifecycle()
@@ -66,6 +65,18 @@ fun CustomerCompanionDashboard(
             onClick = onViewProducts
         ) {
             Text("Browse all products  ")
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = "Chevron Right"
+            )
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth()
+                .testTag("view-saved"),
+            onClick = onViewSaved
+        ) {
+            Text("My saved products")
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Chevron Right"

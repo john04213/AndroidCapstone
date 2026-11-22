@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,7 +20,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -84,7 +82,8 @@ fun ProductDetailsContent(
                 IconButton(onClick = onBookmarkClick) {
                     Icon(
                         imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        contentDescription = "Bookmark product"
+                        contentDescription = if (isBookmarked) "Remove from saved" else "Save product",
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
@@ -175,23 +174,6 @@ fun ProductDetailsContent(
 
         Spacer(Modifier.height(16.dp))
 
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(
-                Icons.Outlined.BookmarkBorder,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text("Save product")
-        }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 

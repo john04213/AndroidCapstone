@@ -4,6 +4,8 @@ import com.pnc.customercompanion.core.error.LoadException
 import com.pnc.customercompanion.core.error.toLoadFailure
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
+import com.pnc.customercompanion.features.products.data.local.SavedProductItemDao
+import com.pnc.customercompanion.features.products.data.local.SavedProductItemMapper
 import com.pnc.customercompanion.features.products.domain.Product
 import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.domain.ProductRepository
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 class DefaultProductRepository @Inject constructor(
     private val dataSource: ProductDataSource,
-    private val productItemDao: ProductItemDao
+    private val productItemDao: ProductItemDao,
+    private val savedProductItemDao: SavedProductItemDao
 ): ProductRepository {
     override suspend fun observeProducts(): Flow<List<Product>> = flow {
         emit(dataSource.getProducts().map { productDto ->
@@ -48,6 +51,20 @@ class DefaultProductRepository @Inject constructor(
             productItems.map { it }
         }
     }
+
+    override fun getSavedProducts(): Flow<List<Product>> =
+        savedProductItemDao.getSavedProducts().map { rows ->
+            rows.map { SavedProductItemMapper.toDomain(it) }
+        }
+
+    override suspend fun isSaved(id: Int): Boolean =
+        savedProductItemDao.isSaved(id)
+
+    override suspend fun saveProduct(product: ProductItem) =
+        savedProductItemDao.save(SavedProductItemMapper.toSaved(product))
+
+    override suspend fun removeSavedProduct(id: Int) =
+        savedProductItemDao.remove(id)
 
     override suspend fun clearDatabase() {
         productItemDao.clearHistory()
