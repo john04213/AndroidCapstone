@@ -3,6 +3,7 @@ package com.pnc.customercompanion.core.database
 import android.content.Context
 import androidx.room.Room
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
+import com.pnc.customercompanion.features.products.data.local.SavedProductItemDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +22,6 @@ class DatabaseModule {
             AppDatabase::class.java,
             "app_database"
         )
-            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -29,5 +29,11 @@ class DatabaseModule {
     @Singleton
     fun provideProductDao(database: AppDatabase): ProductItemDao {
         return database.productItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedProductItemDao(database: AppDatabase): SavedProductItemDao {
+        return database.savedProductItemDao()
     }
 }

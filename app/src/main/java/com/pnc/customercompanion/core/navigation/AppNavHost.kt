@@ -9,6 +9,7 @@ import com.pnc.customercompanion.core.CustomerCompanionDashboard
 import com.pnc.customercompanion.features.orders.presentation.OrdersScreen
 import com.pnc.customercompanion.features.products.presentation.composables.ProductDetails
 import com.pnc.customercompanion.features.products.presentation.composables.ProductDirectoryRoute
+import com.pnc.customercompanion.features.products.presentation.composables.SavedScreen
 
 @Composable
 fun AppNavHost(
@@ -29,6 +30,9 @@ fun AppNavHost(
                 },
                 onViewOrders = {
                     navController.navigate(OrdersRoute)
+                },
+                onViewSaved = {
+                    navController.navigate(SavedRoute)
                 }
             )
         }
@@ -52,6 +56,17 @@ fun AppNavHost(
 
         composable<OrdersRoute> {
             OrdersScreen()
+        }
+
+        composable<SavedRoute> {
+            SavedScreen(
+                onProductSelected = { productId ->
+                    navController.navigate(ProductItemRoute(productId))
+                },
+                onBrowseProducts = {
+                    navController.navigate(ProductListRoute)
+                }
+            )
         }
     }
 }

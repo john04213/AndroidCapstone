@@ -9,30 +9,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.pnc.customercompanion.ui.theme.AndroidCapstoneTheme
 import com.pnc.customercompanion.features.products.domain.ProductItem
+import com.pnc.customercompanion.features.products.domain.availability
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -81,7 +82,8 @@ fun ProductDetailsContent(
                 IconButton(onClick = onBookmarkClick) {
                     Icon(
                         imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        contentDescription = "Bookmark product"
+                        contentDescription = if (isBookmarked) "Remove from saved" else "Save product",
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
@@ -90,6 +92,8 @@ fun ProductDetailsContent(
         AsyncImage(
             model = imageModel,
             contentDescription = product.name,
+            error = rememberVectorPainter(Icons.Outlined.Image),
+            fallback = rememberVectorPainter(Icons.Outlined.Image),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(4.dp))
@@ -106,25 +110,9 @@ fun ProductDetailsContent(
         )
         Spacer(Modifier.height(12.dp))
 
+        AvailabilityBadge(product.availability())
+
         Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    "Stock level",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    "${product.stockLevel}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -137,7 +125,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    product.color ?: "no color available",
+                    product.color ?: "Not specified",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -175,7 +163,7 @@ fun ProductDetailsContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    product.productLine ?: "no style available",
+                    product.productLine ?: "Not specified",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -186,23 +174,6 @@ fun ProductDetailsContent(
 
         Spacer(Modifier.height(16.dp))
 
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(
-                Icons.Outlined.BookmarkBorder,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text("Save product")
-        }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 

@@ -10,6 +10,8 @@ import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
 import com.pnc.customercompanion.features.products.domain.GetProductUseCase
 import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.domain.SaveProductItemUseCase
+import com.pnc.customercompanion.features.products.domain.saved.IsProductSavedUseCase
+import com.pnc.customercompanion.features.products.domain.saved.ToggleSavedProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -23,11 +25,16 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
     private val getProduct: GetProductUseCase,
-    private val saveProduct: SaveProductItemUseCase
+    private val saveProduct: SaveProductItemUseCase,
+    private val isProductSaved: IsProductSavedUseCase,
+    private val toggleSavedProduct: ToggleSavedProductUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoadState<ProductItem>>(LoadState.Loading)
     val uiState: StateFlow<LoadState<ProductItem>> = _uiState.asStateFlow()
+    private val _isSaved = MutableStateFlow(false)
+
+    val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
 
     private var loadJob: Job? = null
     private var loadedId: Int? = null
@@ -46,6 +53,7 @@ class ProductDetailsViewModel @Inject constructor(
                     _uiState.value = LoadState.Failed(LoadFailure.NOT_FOUND)
                 } else {
                     _uiState.value = LoadState.Success(product)
+                    _isSaved.value = isProductSaved(product.id)
                     recordProductVisit(product)
                 }
             } catch (e: LoadException) {
@@ -58,6 +66,14 @@ class ProductDetailsViewModel @Inject constructor(
         val id = loadedId ?: return
         loadedId = null
         loadProduct(id)
+    }
+
+    fun toggleSaved() {
+        val product = (uiState.value as? LoadState.Success)?.data ?: return
+        viewModelScope.launch {
+            toggleSavedProduct(product, _isSaved.value)
+            _isSaved.value = !_isSaved.value
+        }
     }
 
     private suspend fun recordProductVisit(product: ProductItem) {

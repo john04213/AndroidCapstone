@@ -15,4 +15,12 @@ interface ProductRepository {
     fun getProductHistory(): Flow<List<ProductItem>>
 
     suspend fun clearDatabase()
+
+    fun getSavedProducts(): Flow<List<Product>>
+
+    suspend fun isSaved(id: Int): Boolean
+
+    suspend fun saveProduct(product: ProductItem)
+
+    suspend fun removeSavedProduct(id: Int)
 }

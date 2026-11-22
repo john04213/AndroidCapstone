@@ -41,6 +41,7 @@ fun CustomerCompanionDashboard(
     onViewProducts: () -> Unit,
     onViewProductItem: (Int) -> Unit,
     onViewOrders: () -> Unit,
+    onViewSaved: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val items by viewModel.productItems.collectAsStateWithLifecycle()
@@ -64,6 +65,18 @@ fun CustomerCompanionDashboard(
             onClick = onViewProducts
         ) {
             Text("Browse all products  ")
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = "Chevron Right"
+            )
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth()
+                .testTag("view-saved"),
+            onClick = onViewSaved
+        ) {
+            Text("My saved products")
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Chevron Right"
