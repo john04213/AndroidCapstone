@@ -1,7 +1,9 @@
 package com.pnc.customercompanion.features.products.presentation.composables
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pnc.customercompanion.features.products.domain.Product
+import com.pnc.customercompanion.features.products.domain.availability
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -35,6 +38,8 @@ fun ProductCard(
                 text = "${product.productNumber} · ${usdFormat.format(product.listPrice)}",
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            AvailabilityBadge(product.availability())
         }
     }
 }
