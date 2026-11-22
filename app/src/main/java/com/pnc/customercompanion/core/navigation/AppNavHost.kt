@@ -45,7 +45,8 @@ fun AppNavHost(
         composable<ProductItemRoute> { backStackEntry ->
             val route: ProductItemRoute = backStackEntry.toRoute()
             ProductDetails(
-                productId = route.productId
+                productId = route.productId,
+                onBack = { navController.popBackStack() }
             )
         }
 

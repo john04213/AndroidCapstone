@@ -4,7 +4,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
@@ -67,17 +66,10 @@ fun ProductDirectoryRoute(
                             val productId = navigator.currentDestination?.contentKey
                             if (productId != null) {
 
-                                val showBackArrow = !useTwoPaneLayout
-
                                 ProductDetails(
                                     productId = productId,
-                                    showBackArrow = showBackArrow,
-                                    onBack = {
-                                        scope.launch {
-                                            if (navigator.canNavigateBack()) {
-                                                navigator.navigateBack()
-                                            }
-                                        }
+                                    onBack = if (useTwoPaneLayout) null else {
+                                        { scope.launch { if (navigator.canNavigateBack()) navigator.navigateBack() } }
                                     }
                                 )
                             }

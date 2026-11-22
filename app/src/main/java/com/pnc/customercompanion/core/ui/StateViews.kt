@@ -23,6 +23,7 @@ fun loadFailureMessage(failure: LoadFailure): String {
         LoadFailure.HTTP_ERROR -> "The server had a problem. Please try again later"
         LoadFailure.BAD_DATA -> "We received information we couldn't read. Please try again later"
         LoadFailure.UNKNOWN -> "Something went wrong. Please try again later"
+        LoadFailure.NOT_FOUND -> "We couldn't find what you were looking for. Please try again."
     }
 }
 
@@ -53,16 +54,21 @@ fun EmptyView(message: String){
 
 // shown when the load failed says what went wrong
 @Composable
-fun FailedView(failure: LoadFailure, onRetry: () -> Unit) {
+fun FailedView(failure: LoadFailure, onRetry: () -> Unit, onBack: (() -> Unit)? = null) {
     Column(
         modifier = Modifier.fillMaxSize().padding(LocalSpacing.current.extraLarge),
         verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(text = loadFailureMessage(failure), textAlign = TextAlign.Center)
-        Button(
-            onClick = onRetry
-        ) { Text(text = "Retry")}
+        if (failure == LoadFailure.NOT_FOUND) {
+            // retrying won't help, so offer a way out instead
+            if (onBack != null) {
+                Button(onClick = onBack) { Text(text = "Go back") }
+            }
+        } else {
+            Button(onClick = onRetry) { Text(text = "Retry") }
+        }
     }
 }
 

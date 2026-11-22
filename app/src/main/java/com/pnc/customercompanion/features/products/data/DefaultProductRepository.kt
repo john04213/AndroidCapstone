@@ -1,9 +1,13 @@
-package com.pnc.customercompanion.features.products.domain
+package com.pnc.customercompanion.features.products.data
 
-import com.pnc.customercompanion.features.products.data.ProductDataSource
-import com.pnc.customercompanion.features.products.data.ProductMapper
+import com.pnc.customercompanion.core.error.LoadException
+import com.pnc.customercompanion.core.error.toLoadFailure
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
+import com.pnc.customercompanion.features.products.domain.Product
+import com.pnc.customercompanion.features.products.domain.ProductItem
+import com.pnc.customercompanion.features.products.domain.ProductRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -20,7 +24,16 @@ class DefaultProductRepository @Inject constructor(
     }
 
     override suspend fun observeProduct(id: Int): Flow<ProductItem?> = flow {
-        emit(ProductMapper.mapToDomain(dataSource.getProduct(id)))
+        val productDto = try {
+            dataSource.getProduct(id)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: LoadException) {
+            throw error
+        } catch (error: Exception) {
+            throw (LoadException(toLoadFailure(error), error))
+        }
+        emit(ProductMapper.mapToDomain(productDto))
     }
 
     override suspend fun refreshProducts() = Unit
