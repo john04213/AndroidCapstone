@@ -4,7 +4,6 @@ import com.pnc.customercompanion.features.products.data.ProductDataSource
 import com.pnc.customercompanion.features.products.data.ProductMapper
 import com.pnc.customercompanion.features.products.data.local.ProductItemDao
 import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
-import com.pnc.customercompanion.features.products.data.local.ProductItemHistoryMapper.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map

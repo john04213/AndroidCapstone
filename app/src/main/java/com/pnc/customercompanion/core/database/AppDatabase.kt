@@ -12,7 +12,7 @@ import com.pnc.customercompanion.features.products.data.local.ProductItemHistory
     entities = [
         ProductItemHistory::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2)

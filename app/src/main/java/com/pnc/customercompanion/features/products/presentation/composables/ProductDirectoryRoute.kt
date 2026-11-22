@@ -4,6 +4,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductDirectoryRoute(
     onBack: () -> Unit = {},
+    useTwoPaneLayout: Boolean = false,
     viewModel: ProductDirectoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,7 +66,20 @@ fun ProductDirectoryRoute(
                         CompositionLocalProvider(LocalPaneAnimationScope provides this) {
                             val productId = navigator.currentDestination?.contentKey
                             if (productId != null) {
-                                ProductDetails(productId = productId)
+
+                                val showBackArrow = !useTwoPaneLayout
+
+                                ProductDetails(
+                                    productId = productId,
+                                    showBackArrow = showBackArrow,
+                                    onBack = {
+                                        scope.launch {
+                                            if (navigator.canNavigateBack()) {
+                                                navigator.navigateBack()
+                                            }
+                                        }
+                                    }
+                                )
                             }
                         }
                     }
@@ -73,3 +88,4 @@ fun ProductDirectoryRoute(
         }
     }
 }
+

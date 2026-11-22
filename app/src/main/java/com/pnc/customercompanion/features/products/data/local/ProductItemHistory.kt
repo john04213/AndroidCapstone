@@ -12,7 +12,7 @@ data class ProductItemHistory(
     val color: String?,
     val listPrice: Double,
     val stockLevel: Int,
-    val productLine: String,
+    val productLine: String?,
     val productModelId: Int,
     val productModelName: String,
     val manufacturer: String?,

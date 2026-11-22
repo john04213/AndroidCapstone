@@ -35,6 +35,7 @@ fun AppNavHost(
 
         composable<ProductListRoute> {
             ProductDirectoryRoute(
+                useTwoPaneLayout = useTwoPaneLayout,
                 onBack = {
                     navController.popBackStack()
                 }
