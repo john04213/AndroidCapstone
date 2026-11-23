@@ -9,8 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,15 +52,35 @@ import java.util.Locale
 
 // the orders screen: shows the view that matches the current load state
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
+fun OrdersScreen(onBack: () -> Unit, onOrderSelected: (Int) -> Unit, viewModel: OrdersViewModel  = hiltViewModel() ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sort by viewModel.sort.collectAsStateWithLifecycle()
     val refreshFailure by viewModel.refreshFailure.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val searchText by viewModel.searchQuery.collectAsStateWithLifecycle()
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "My Orders",
+                        modifier = Modifier.semantics { heading() }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Return to discover"
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -65,11 +88,6 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
             verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.large)
         ){
 
-            Text(
-                text = "My Orders",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.semantics { heading() }
-            )
             Text(
                 text = "${viewModel.customerName} is a demo customer",
                 style = MaterialTheme.typography.titleMedium
@@ -85,7 +103,8 @@ fun OrdersScreen(viewModel: OrdersViewModel  = hiltViewModel() ){
                     onSortChange = viewModel::changeSort,
                     refreshFailure = refreshFailure,
                     isRefreshing = isRefreshing,
-                    onRefresh = viewModel::refresh
+                    onRefresh = viewModel::refresh,
+                    onOrderSelected = onOrderSelected
                 )
                 is LoadState.Failed -> FailedView(failure = state.failure, onRetry = viewModel::loadOrders)
             }
@@ -103,7 +122,8 @@ private fun OrdersList(
     onSortChange: (OrderSort) -> Unit,
     refreshFailure: LoadFailure?,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onOrderSelected: (Int) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium)
@@ -142,7 +162,10 @@ private fun OrdersList(
                         verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium)
                     ) {
                         items(items = orders, key = { order -> order.orderNumber }) { order ->
-                            OrderRow(order = order)
+                            OrderRow(
+                                order = order,
+                                onClick = { onOrderSelected(order.orderNumber) }
+                            )
                     }
                 }
             }
@@ -185,8 +208,9 @@ internal fun sortLabel(sort: OrderSort): String {
 
 // one order: its number, date, and total
 @Composable
-internal fun OrderRow(order: Order){
+internal fun OrderRow(order: Order, onClick: () -> Unit){
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .semantics ( mergeDescendants = true ) {}
