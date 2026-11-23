@@ -24,7 +24,7 @@ class OrdersScreenUiTest {
             orderLines = emptyList()
         )
 
-        composeTestRule.setContent { OrderRow(order = order) }
+        composeTestRule.setContent { OrderRow(order = order, onClick = {}) }
         composeTestRule.onAllNodes(hasText("Order # 75069") and hasText("Date: Jun 29, 2014")).assertCountEquals(1)
     }
 }

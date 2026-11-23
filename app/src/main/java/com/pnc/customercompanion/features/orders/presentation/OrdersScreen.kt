@@ -64,7 +64,12 @@ fun OrdersScreen(onBack: () -> Unit, onOrderSelected: (Int) -> Unit, viewModel: 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = {
+                    Text(
+                        text = "My Orders",
+                        modifier = Modifier.semantics { heading() }
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -83,11 +88,6 @@ fun OrdersScreen(onBack: () -> Unit, onOrderSelected: (Int) -> Unit, viewModel: 
             verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.large)
         ){
 
-            Text(
-                text = "My Orders",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.semantics { heading() }
-            )
             Text(
                 text = "${viewModel.customerName} is a demo customer",
                 style = MaterialTheme.typography.titleMedium
@@ -208,7 +208,7 @@ internal fun sortLabel(sort: OrderSort): String {
 
 // one order: its number, date, and total
 @Composable
-internal fun OrderRow(order: Order, onClick: () -> Unit = {}){
+internal fun OrderRow(order: Order, onClick: () -> Unit){
     Card(
         onClick = onClick,
         modifier = Modifier

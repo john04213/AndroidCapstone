@@ -6,11 +6,13 @@ import com.pnc.customercompanion.core.ui.LoadState
 import com.pnc.customercompanion.features.orders.domain.Order
 import com.pnc.customercompanion.features.orders.domain.OrderLines
 import com.pnc.customercompanion.features.orders.domain.OrderRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -30,12 +32,16 @@ class OrderDetailViewModelTest {
         // how many times the ViewModel asked for one order
         var getOrderCalls = 0
 
+        // an order number in here waits until its gate is completed, so a test can keep a load running
+        val gates = mutableMapOf<Int, CompletableDeferred<Unit>>()
+
         override suspend fun getOrders(): List<Order> {
             return orders
         }
 
         override suspend fun getOrder(orderNumber: Int): Order? {
             getOrderCalls += 1
+            gates[orderNumber]?.await()
             val failureNow = failure
             if (failureNow != null) {
                 throw LoadException(failureNow, IOException())
@@ -50,7 +56,7 @@ class OrderDetailViewModelTest {
             orderNumber = orderNumber,
             orderDate = LocalDateTime.parse("2014-06-29T00:00:00"),
             shipDate = null,
-            statusCode = 5,
+            statusCode = 1,
             orderLines = listOf(
                 OrderLines(
                     productName = "Touring Tire Tube",
@@ -151,6 +157,49 @@ class OrderDetailViewModelTest {
         advanceUntilIdle()
 
         viewModel.loadOrder(74977)
+        advanceUntilIdle()
+
+        assertEquals(LoadState.Success(second), viewModel.uiState.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `asking again for an order that is still loading does not load again`() = runTest {
+        val repository = FakeOrderRepository(listOf(createOrder(75069)))
+        val gate = CompletableDeferred<Unit>()
+        repository.gates[75069] = gate
+        val viewModel = OrderDetailViewModel(repository)
+        viewModel.loadOrder(75069)
+        runCurrent()
+
+        viewModel.loadOrder(75069)
+        runCurrent()
+        gate.complete(Unit)
+        advanceUntilIdle()
+
+        assertEquals(1, repository.getOrderCalls)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `a slow load of an order the customer left does not replace the order shown`() = runTest {
+        val first = createOrder(75069)
+        val second = createOrder(74977)
+        val repository = FakeOrderRepository(listOf(first, second))
+        val firstGate = CompletableDeferred<Unit>()
+        val secondGate = CompletableDeferred<Unit>()
+        repository.gates[75069] = firstGate
+        repository.gates[74977] = secondGate
+        val viewModel = OrderDetailViewModel(repository)
+        viewModel.loadOrder(75069)
+        runCurrent()
+        viewModel.loadOrder(74977)
+        runCurrent()
+
+        // the second order answers first, then the first order's old answer arrives late
+        secondGate.complete(Unit)
+        advanceUntilIdle()
+        firstGate.complete(Unit)
         advanceUntilIdle()
 
         assertEquals(LoadState.Success(second), viewModel.uiState.value)
