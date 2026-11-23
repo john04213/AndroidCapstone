@@ -36,6 +36,8 @@ import com.pnc.customercompanion.features.products.domain.ProductItem
 import com.pnc.customercompanion.features.products.domain.availability
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,6 +98,7 @@ fun ProductDetailsContent(
             fallback = rememberVectorPainter(Icons.Outlined.Image),
             modifier = Modifier
                 .fillMaxWidth()
+                .height(240.dp)
                 .clip(RoundedCornerShape(4.dp))
         )
 

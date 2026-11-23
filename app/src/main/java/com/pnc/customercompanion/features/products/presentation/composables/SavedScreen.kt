@@ -41,10 +41,21 @@ fun SavedScreen(
             )
 
             when (val current = state) {
-                is LoadState.Success -> SavedProductList(
-                    products = current.data,
-                    onProductSelected = onProductSelected
-                )
+                is LoadState.Success -> {
+                    Column(
+                    verticalArrangement = Arrangement.spacedBy(LocalSpacing.current.medium)
+                ) {
+                    Text(
+                        text = "${current.data.size} items saved",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    SavedProductList(
+                        products = current.data,
+                        onProductSelected = onProductSelected
+                    )
+                }
+            }
                 is LoadState.Empty -> SavedEmptyView(onBrowseProducts = onBrowseProducts)
 
                 else -> LoadingView()
