@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.pnc.customercompanion.core.CustomerCompanionDashboard
+import com.pnc.customercompanion.features.orders.presentation.OrderDetailScreen
 import com.pnc.customercompanion.features.orders.presentation.OrdersScreen
 import com.pnc.customercompanion.features.products.presentation.composables.ProductDetails
 import com.pnc.customercompanion.features.products.presentation.composables.ProductDirectoryRoute
@@ -55,7 +56,20 @@ fun AppNavHost(
         }
 
         composable<OrdersRoute> {
-            OrdersScreen()
+            OrdersScreen(
+                onBack = { navController.popBackStack() },
+                onOrderSelected = { orderNumber ->
+                    navController.navigate(OrderDetailRoute(orderNumber))
+                }
+            )
+        }
+
+        composable<OrderDetailRoute> { backStackEntry ->
+            val route: OrderDetailRoute = backStackEntry.toRoute()
+            OrderDetailScreen(
+                orderNumber = route.orderNumber,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable<SavedRoute> {

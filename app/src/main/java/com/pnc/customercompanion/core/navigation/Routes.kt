@@ -17,4 +17,7 @@ data class ProductItemRoute(val productId: Int): CustomerCompanionRoute
 data object OrdersRoute: CustomerCompanionRoute
 
 @Serializable
+data class OrderDetailRoute(val orderNumber: Int): CustomerCompanionRoute
+
+@Serializable
 data object SavedRoute: CustomerCompanionRoute
