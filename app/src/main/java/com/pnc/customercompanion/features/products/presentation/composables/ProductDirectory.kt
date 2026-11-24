@@ -35,9 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.pnc.customercompanion.R
+import com.pnc.customercompanion.core.ui.FailedView
 import com.pnc.customercompanion.features.products.domain.SortOrder
 import com.pnc.customercompanion.features.products.presentation.state.ProductDirectoryState
+import com.pnc.customercompanion.features.products.presentation.viewmodels.ProductDirectoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +52,8 @@ fun ProductDirectory(
     onProductSelected: (Int) -> Unit = {},
     onRefresh: () -> Unit = {},
     onDismissError: () -> Unit = {},
-    onSearchQueryChange: (String) -> Unit = {}
+    onSearchQueryChange: (String) -> Unit = {},
+    viewModel: ProductDirectoryViewModel = hiltViewModel()
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -154,11 +158,21 @@ fun ProductDirectory(
             isRefreshing = state.isRefreshing,
             onRefresh = onRefresh
         ) {
-            ProductList(
-                products = state.displayedProducts,
-                onProductSelected = onProductSelected,
-                innerPadding = PaddingValues(0.dp)
-            )
+            val failure = state.loadFailure
+            if (failure != null && state.products.isEmpty()) {
+                FailedView(
+                    failure = state.loadFailure,
+                    onRetry = viewModel::loadProducts,
+                    onBack = onBack
+                )
+            }
+            else {
+                ProductList(
+                    products = state.displayedProducts,
+                    onProductSelected = onProductSelected,
+                    innerPadding = PaddingValues(0.dp)
+                )
+            }
         }
     }
 }
