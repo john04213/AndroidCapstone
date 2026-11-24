@@ -41,7 +41,7 @@ class ProductDirectoryViewModel @Inject constructor(
 
             try {
                 refreshProducts()
-                getProducts().onEach { productsList ->
+                getProducts().collect { productsList ->
                     _uiState.update { currentState ->
                         currentState.copy(
                             products = productsList
