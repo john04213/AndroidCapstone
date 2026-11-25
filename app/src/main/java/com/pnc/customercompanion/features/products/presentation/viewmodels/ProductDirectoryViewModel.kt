@@ -35,7 +35,8 @@ class ProductDirectoryViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    isRefreshing = true
+                    isRefreshing = true,
+                    loadFailure = null
                 )
             }
 
