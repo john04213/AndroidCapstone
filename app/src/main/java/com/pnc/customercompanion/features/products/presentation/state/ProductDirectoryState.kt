@@ -1,5 +1,6 @@
 package com.pnc.customercompanion.features.products.presentation.state
 
+import com.pnc.customercompanion.core.error.LoadFailure
 import com.pnc.customercompanion.features.products.domain.Product
 import com.pnc.customercompanion.features.products.domain.SortOrder
 
@@ -9,7 +10,7 @@ data class ProductDirectoryState(
     val sortOrder: SortOrder = SortOrder.NAME_ASC,
     val selectedProductId: Int? = null,
     val isRefreshing: Boolean = false,
-    val errorMessage: String? = null
+    val loadFailure: LoadFailure? = null
 ) {
     val displayedProducts: List<Product>
         get() = products

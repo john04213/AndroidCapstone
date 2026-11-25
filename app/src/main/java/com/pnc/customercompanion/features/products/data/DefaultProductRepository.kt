@@ -21,7 +21,16 @@ class DefaultProductRepository @Inject constructor(
     private val savedProductItemDao: SavedProductItemDao
 ): ProductRepository {
     override suspend fun observeProducts(): Flow<List<Product>> = flow {
-        emit(dataSource.getProducts().map { productDto ->
+        val productDtos = try {
+            dataSource.getProducts()
+        }
+        catch (e: CancellationException) {
+            throw e
+        }
+        catch (e: Exception) {
+            throw (LoadException(toLoadFailure(e), e))
+        }
+        emit(productDtos.map { productDto ->
             ProductMapper.mapToDomain(productDto)
         })
     }
